@@ -34,7 +34,7 @@ class Page:
 
     def return_links(self):
         if not self.links:
-            self.get_links()
+            self.get_links(self.html)
         return self.links
 
     def get_images(self):
