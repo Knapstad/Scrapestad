@@ -3,11 +3,10 @@ from Bot import Bot
 
 
 bot = Bot()
-html = bot.get_html("https://www.obos.no")
-page = Page(html[1], html[0])
+html = bot.get_html("https://www.vg.no")
+page = Page(html[0], html[1], html[2])
 page.make_soup()
-page.get_meta()
-page.get_images()
+page.set_meta()
+page.set_images()
 
-for i in page.images:
-    print(i)
+print(page)
