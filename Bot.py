@@ -31,7 +31,8 @@ class Bot:
     def get_html(self, url):
         self.driver.get(url)
         html = self.driver.page_source
-        return (url, html)
+        actual_url = self.driver.current_url
+        return (url, html, actual_url)
 
     def quit(self):
         # print(f"quiting driver {self.ID}")
