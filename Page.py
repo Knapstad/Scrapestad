@@ -48,4 +48,22 @@ class Page:
         for i in imgs:
             self.images.append((urljoin(self.url, i.get("src")), i.get("alt","")))
 
-    
+    def get_images(self):
+        if not self.images:
+            set_images(self)
+        return self.images
+
+    def images_meta(self):
+        self.images_missing_alt = []
+        self.images_blank_alt = []
+        self.images_with_alt = []
+        for i in self.images:
+            if i[1] == "":
+                if i not in self.images_missing_alt:
+                    self.images_missing_alt.append(i)
+            elif i[1].isspace():
+                if i not in self.images_blank_alt:
+                    self.images_blank_alt.append(i)
+            else:
+                self.images_with_alt.append(i)
+
