@@ -28,7 +28,7 @@ class Bot:
         # print(f"driver {self.ID} loaded")
         return driver
 
-    def get_html(self, url):
+    def get_html(self, url) -> tuple:
         self.driver.get(url)
         html = self.driver.page_source
         actual_url = self.driver.current_url
