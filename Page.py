@@ -3,11 +3,13 @@ from urllib.parse import urljoin
 
 
 class Page:
-    def __init__(self, url: str, html: str, actual_url: str):
-        self.html = html
-        self.url = url
-        self.actual_url = actual_url
+    def __init__(self, html: tuple)
+        self.html = html[1]
+        self.url = html[0]
+        self.actual_url = html[2]
         self.redirected = self.url not in actual_url
+        self.description = ""
+        self.meta_title = ""
 
     def __str__(self):
         representation = f"Url: {self.url}\nActual_url: {self.actual_url}\nIs redirected: {self.redirected}\nMeta_Description: {self.description}\nMeta_title: {self.meta_title}"
@@ -26,9 +28,9 @@ class Page:
         metas = self.soup.findAll("meta")
         for i in metas:
             if i.get("name") == "description":
-                self.description = i.get("content")
+                self.description = i.get("content","")
             if i.get("name") == "title":
-                self.meta_title = i.get("content")
+                self.meta_title = i.get("content","")
 
     def set_links(self, html):
         self.links = []
