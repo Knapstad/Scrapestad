@@ -3,18 +3,26 @@ from urllib.parse import urljoin
 
 
 class Page:
-    def __init__(self, html: tuple)
+    def __init__(self, html: tuple):
         self.html = html[1]
         self.url = html[0]
         self.actual_url = html[2]
-        self.redirected = self.url not in actual_url
+        self.redirected = self.url not in self.actual_url
         self.description = ""
         self.meta_title = ""
+        self.parse_html()
+        self.set_meta()
+        self.set_links(self.html)
 
     def __str__(self):
         representation = f"Url: {self.url}\nActual_url: {self.actual_url}\nIs redirected: {self.redirected}\nMeta_Description: {self.description}\nMeta_title: {self.meta_title}"
         return representation
-        
+
+    def __eq__(self, value):
+        return value.actual_url == self.actual_url
+
+    def __ne__(self, value):
+        return not self == value
 
     def parse_html(self):
         soup = BS(self.html, "lxml")
@@ -37,7 +45,7 @@ class Page:
         soup = BS(html, "lxml")
         for link in soup.findAll("a"):
             if link.has_attr("href"):
-                self.links.append(urljoin("https://www.obos.no", link["href"]))
+                self.links.append(urljoin(self.actual_url, link["href"]))
 
     def get_links(self):
         if not self.links:
