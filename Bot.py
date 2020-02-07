@@ -1,5 +1,5 @@
 from selenium import webdriver
-
+from urllib.parse import urlparse
 
 class Bot:
     ID = 0
@@ -8,6 +8,13 @@ class Bot:
         Bot.ID += 1
         self.ID = Bot.ID
         self.driver = self.load_driver()
+
+    def __enter__(self): 
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback): 
+        self.driver.quit()
+
 
     def load_driver(self, headless=True):
         """Opens a webdriver instance with chromedriver
@@ -29,10 +36,12 @@ class Bot:
         return driver
 
     def get_html(self, url) -> tuple:
-        self.driver.get(url)
+        self.url = urlparse(url,scheme="https")
+        
+        self.driver.get(self.url.geturl())
         html = self.driver.page_source
         actual_url = self.driver.current_url
-        return (url, html, actual_url)
+        return (self.url.geturl(), html, actual_url)
 
     def quit(self):
         # print(f"quiting driver {self.ID}")
