@@ -13,6 +13,8 @@ class Page:
         self.parse_html()
         self.set_meta()
         self.set_links(self.html)
+        self.set_images()
+        self.title = self.soup.find("title").text
 
     def __str__(self):
         representation = f"Url: {self.url}\nActual_url: {self.actual_url}\nIs redirected: {self.redirected}\nMeta_Description: {self.description}\nMeta_title: {self.meta_title}"
