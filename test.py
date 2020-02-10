@@ -20,10 +20,6 @@ def worker(queue):
                 if i not in behandleslist and"obos.no" in i:
                     queue.put(i)
                     behandleslist.append(i)
-                if len(erbehandlet) >=10:
-                    
-                    return 
-           
             # a.task_done()
     finally:
 
