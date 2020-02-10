@@ -27,9 +27,7 @@ def page_worker(work_queue, worked_queue, behandleslist, erbehandlet):
 
 def table_worker(queue, table):
     while True:
-        print("tableworker")
         page=queue.get()
-        print(f"tableworker {page.title}")
         currentRowCount = table.rowCount()
         table.setRowCount(currentRowCount + 1)
         table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
