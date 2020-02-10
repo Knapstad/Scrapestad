@@ -35,7 +35,10 @@ class Worker(QRunnable):
         """
         try:
             self.fn(*self.args, **self.kwargs)
-        finally:
+        except Exception as e:
+            print(e)
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -51,6 +54,30 @@ class MainWindow(QMainWindow):
             antall.setText("Henter data...")
             worker = Worker(add_data, my_table)
             self.threadpool.start(worker)
+
+        def get_all(urls, table):
+            bot = Bot()
+            for url in urls:
+                if ".obos.no" in url and "mail" not in url and "tel" not in url and "#main" not in url:
+                    try:
+                        html=bot.get_html(url)
+                        page = Page(html)
+                        currentRowCount = table.rowCount()
+                        table.setRowCount(currentRowCount + 1)
+                        table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
+                        table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
+                        table.setItem(currentRowCount, 2, QTableWidgetItem(f"{page.actual_url}"))
+                        table.setItem(currentRowCount, 3, QTableWidgetItem(f"{page.redirected}"))
+                        table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
+                        table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
+                        table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
+                        for i in page.get_links():
+                            if i not in urls:
+                                urls.append(i)
+                        antall.setText(f"Antall urler: {len(urls)}")
+                    except Exception as e:
+                        print(e)
+            bot.quit()
 
         def add_data(table):
             hent.setEnabled(False)
@@ -78,8 +105,9 @@ class MainWindow(QMainWindow):
                 table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
                 table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
                 urls = page.get_links()
+                # for i in range(3):
                 for url in urls:
-                    if ".obos.no" in url and "mail" not in url and "tel" not in url:
+                    if ".obos.no" in url and "mail" not in url and "tel" not in url and "#main" not in url:
                         try:
                             html=bot.get_html(url)
                             page = Page(html)
@@ -161,7 +189,7 @@ class MainWindow(QMainWindow):
 
         site_label = QLabel("Hvilken side:")
         site = QComboBox()
-        site.addItems(["en", "alle"])
+        site.addItems(["alle", "en"])
         layout5.addWidget(site_label)
         layout5.addWidget(site)
 
