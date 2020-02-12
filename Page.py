@@ -14,14 +14,24 @@ class Page:
         self.set_meta()
         self.set_links(self.html)
         self.set_images()
-        self.title = self.soup.find("title").text
+        self.set_title()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.html = None
+        self.soup = None
 
     def __str__(self):
         representation = f"Url: {self.url}\nActual_url: {self.actual_url}\nIs redirected: {self.redirected}\nMeta_Description: {self.description}\nMeta_title: {self.meta_title}"
         return representation
 
-    def __eq__(self, value):
-        return value.actual_url == self.actual_url
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        else:
+            return False
 
     def __ne__(self, value):
         return not self == value
@@ -64,6 +74,12 @@ class Page:
         if not self.images:
             set_images(self)
         return self.images
+
+    def set_title(self):
+        try:
+            self.title = self.soup.find("title").text
+        except Exception:
+            self.title = " "
 
     def images_meta(self):
         self.images_missing_alt = []
