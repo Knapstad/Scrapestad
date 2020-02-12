@@ -3,10 +3,16 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from Page import Page
 from Bot import Bot
+from test_multitprocess import table_worker, page_worker, run_page_workers
+# from test import  
+import typing
+
 import time
-import os
+import csv
 import sys
-from test import *
+import os
+
+
 
 
 def resource_path(relative_path):
@@ -94,7 +100,7 @@ class MainWindow(QMainWindow):
             table.setColumnWidth(6,500)
 
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(),4,table)
+                run_page_workers(fragment.text(),5,table)
                 # bot = Bot()
                 # html = bot.get_html(fragment.text())
                 # page = Page(html)
@@ -141,14 +147,12 @@ class MainWindow(QMainWindow):
                 table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
                 table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
                 table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
-            bot.quit()
+                bot.quit()
             hent.setEnabled(True)
 
         def lagre_data(table):
             try:
-                data = "urls"
-                for i in range(table.rowCount()):
-                    data += f"\n{table.item(i,0).text()}"
+                header = ["Tittel", "Url","Actual url", "Redirected", "Description", "No. images", "Links"]
                 filename = QFileDialog.getSaveFileName(
                     caption="Lagre fil",
                     directory=f"{fragment.text()}".lower(),
@@ -156,12 +160,15 @@ class MainWindow(QMainWindow):
                 )
 
                 if filename[0]:
-                    with open(filename[0], "w") as f:
-                        f.write(data)
+                    with open(filename[0], "w", newline="") as f:
+                        writer = csv.writer(f)
+                        writer.writerow(header)
+                        for i in range(table.rowCount()):
+                            writer.writerow([table.item(i,0).text(), table.item(i,1).text(), table.item(i,2).text(), table.item(i,3).text(), table.item(i,4).text(), table.item(i,5).text(), table.item(i,6).text()])
             except Exception as e:
                 pritn(e)
 
-                
+
         layout1 = QHBoxLayout()
         layout2 = QVBoxLayout()
         layout3 = QVBoxLayout()
@@ -226,12 +233,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
 
-app = QApplication(list(""))
+if __name__ == "__main__":
+    app = QApplication(list(""))
 
-window = MainWindow()
-window.resize(1000, 500)
-window.show()
+    window = MainWindow()
+    window.resize(1000, 500)
+    window.show()
 
 
-# Start the event loop.
-app.exec_()
+    # Start the event loop.
+    app.exec_()
