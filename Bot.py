@@ -22,7 +22,6 @@ class Bot:
             Returns:
             Webdriver  -- The webdriver instance
             """
-
             options = webdriver.ChromeOptions()
             if headless:
                 options.add_argument("headless")
