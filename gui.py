@@ -45,7 +45,10 @@ class Worker(QRunnable):
         except Exception as e:
             print(e)
 
-
+class AlignDelegate(QStyledItemDelegate):
+    def initStyleOption(self, option, index):
+        super(AlignDelegate, self).initStyleOption(option, index)
+        option.displayAlignment = Qt.AlignRight|Qt.AlignCenter
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -62,29 +65,30 @@ class MainWindow(QMainWindow):
             worker = Worker(add_data, my_table)
             self.threadpool.start(worker)
 
-        def get_all(urls, table):
-            bot = Bot()
-            for url in urls:
-                if ".obos.no" in url and "mail" not in url and "tel" not in url and "#main" not in url:
-                    try:
-                        html=bot.get_html(url)
-                        page = Page(html)
-                        currentRowCount = table.rowCount()
-                        table.setRowCount(currentRowCount + 1)
-                        table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
-                        table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
-                        table.setItem(currentRowCount, 2, QTableWidgetItem(f"{page.actual_url}"))
-                        table.setItem(currentRowCount, 3, QTableWidgetItem(f"{page.redirected}"))
-                        table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
-                        table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
-                        table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
-                        for i in page.get_links():
-                            if i not in urls:
-                                urls.append(i)
-                        antall.setText(f"Antall urler: {len(urls)}")
-                    except Exception as e:
-                        print(e)
-            bot.quit()
+        def get_one(table):
+            with Bot() as bot:
+                if not fragment.text().startswith("//"):
+                    url = f"//{fragment.text()}"
+                else:
+                    url = fragment.text()
+                html = bot.get_html(url)
+                page = Page(html)
+                currentRowCount = table.rowCount()
+                table.setRowCount(currentRowCount + 1)
+                table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
+                table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
+                table.setItem(currentRowCount, 2, QTableWidgetItem(f"{page.actual_url}"))
+                table.setItem(currentRowCount, 3, QTableWidgetItem(f"{page.redirected}"))
+                table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
+                table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
+                table.setItem(currentRowCount, 6, QTableWidgetItem(f"{len(page.images_with_alt)}"))
+                table.setItem(currentRowCount, 7, QTableWidgetItem(f"{len(page.images_blank_alt)}"))
+                table.setItem(currentRowCount, 8, QTableWidgetItem(f"{len(page.images_missing_alt)}"))
+                table.setItem(currentRowCount, 9, QTableWidgetItem(f"{page.links}"))
+                # table.setRowHeight(currentRowCount, 500)
+                # table.resizeRowsToContents()
+                antall.setText(f"Antall urler: 1")
+                
 
         def add_data(table):
             hent.setEnabled(False)
@@ -92,18 +96,7 @@ class MainWindow(QMainWindow):
                 run_page_workers(fragment.text(),5,table)
 
             if str(site.currentText()) == "en":
-                bot = Bot()
-                html = bot.get_html(fragment.text())
-                page = Page(html)
-                currentRowCount = table.rowCount()
-                table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
-                table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
-                table.setItem(currentRowCount, 2, QTableWidgetItem(f"{page.actual_url}"))
-                table.setItem(currentRowCount, 3, QTableWidgetItem(f"{page.redirected}"))
-                table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
-                table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
-                table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
-                bot.quit()
+                get_one(table)
             hent.setEnabled(True)
 
         def lagre_data(table):
@@ -152,16 +145,20 @@ class MainWindow(QMainWindow):
         fragment.setMaximumSize(200 - fragment_width, 20)
 
         my_table = QTableWidget()
-        my_table.setColumnCount(7)
-        my_table.setHorizontalHeaderLabels(["Tittel", "Url","Actual url", "Redirected", "Description", "# images", "Links"])
+        my_table.setColumnCount(10)
+        my_table.setHorizontalHeaderLabels(["Tittel", "Url","Actual url", "Redirected", "Description", "images","images with alt", "images with blank alt", "images with no alt", "Links"])
+        my_table.resizeColumnsToContents()
         my_table.setRowCount(0)
         my_table.setColumnWidth(0,200)
-        my_table.setColumnWidth(1,300)
-        my_table.setColumnWidth(2,300)
-        my_table.setColumnWidth(3,100)
-        my_table.setColumnWidth(4,500)
-        my_table.setColumnWidth(5,60)
-        my_table.setColumnWidth(6,500)
+        my_table.setColumnWidth(1,250)
+        my_table.setColumnWidth(2,250)
+        my_table.setColumnWidth(4,300)
+        my_table.setColumnWidth(9,500)
+        delegate = AlignDelegate(my_table)
+        my_table.setItemDelegateForColumn(5, delegate)
+        my_table.setItemDelegateForColumn(6, delegate)
+        my_table.setItemDelegateForColumn(7, delegate)
+        my_table.setItemDelegateForColumn(8, delegate)
         
         fragment_label.setMaximumSize(fragment_width + 5, 20)
         layout4.addWidget(fragment_label)
