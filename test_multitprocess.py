@@ -11,19 +11,25 @@ import traceback
 
 
 
-def page_worker(work_queue, worked_queue, behandleslist, erbehandlet):
+def page_worker(work_queue, worked_queue, behandleslist, erbehandlet, workerid):
     empty=0
     try:
-        print(f"page worker start")
+        # print(f"Starting worker: {workerid}")
         bot = Bot()
-        while True:
-            if len(erbehandlet) > 30:
-                break
+        while not work_queue.empty():
+            # print(f"worker: {workerid} queue not epmpty")
+            
+            # if len(erbehandlet) > 30:
+            #     break
             try:
+                # print(f" worker: {workerid} getting from queue")
                 url = work_queue.get(timeout=1)
+                # print(f" worker: {workerid} {url}") 
             except Empty:
+                # print(f" worker: {workerid} in except")
                 empty+=1
-                time.sleep(2)
+                # print(f" worker: {workerid} {empty}")
+                # time.sleep(2)
                 if empty >= 3:
                     return
                 continue
@@ -33,33 +39,50 @@ def page_worker(work_queue, worked_queue, behandleslist, erbehandlet):
             page = Page(html)
             page.soup=None
             page.html=None
-            worked_queue.put(page)
+            # worked_queue.put(page)
             erbehandlet[page.url]=1
             erbehandlet[page.actual_url]=1
             # erbehandlet.append(page.actual_url)
-            negate = ["page=", "-jpeg", "pid=", "/calendar/createevent", "#", "-pdf"]
+            negate = ["page=", "-jpeg", "pid=", "/calendar/createevent", "#", "-pdf", "/dokumentfil-"]
             for url in page.links:
                 if url not in behandleslist and "www.obos.no" in url and not any(word in url for word in negate):
-                    work_queue.put(url)
+                    # work_queue.put(url)
                     behandleslist[url]=1
-            print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
+            # print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
+
 
     finally:
         bot.quit()
         worked_queue.put("done")
-        print("Pageworker done")
+        # print(f"Pageworker {workerid} done")
+
+def threader(work_queue, worked_queue, behandleslist, erbehandlet, workerid, process):
+    workers=[]
+    work_queue=work_queue
+    worked_queue=worked_queue
+    behandleslist=behandleslist
+    erbehandlet=erbehandlet
+    workerid=workerid
+    process=process
+    for i in range(process):
+        p = Thread(target=page_worker, args=(work_queue, worked_queue, behandleslist, erbehandlet, workerid))
+        workers.append(p)
+    for i in workers:
+        i.start()
+    for i in workers:
+        i.join()
 
 def table_worker(queue, table, num_workers):
     num_workers=num_workers
     done=0
-    print("I am TableWorker!!")
+    # print("I am TableWorker!!")
     while True:
         try:
             page=queue.get(timeout=2)
             if page == "done":
                 done+=1
                 if done >= num_workers:
-                    print("done")
+                    # print("done")
                     return
                 continue
 
@@ -96,7 +119,7 @@ def run_page_workers(first: str, num_workers: int, table):
     try:
         skalbehandles.put(first)
         for i in range(num_workers):
-            print("starting process " + str(i))
+            # print("starting process " + str(i))
             p = Process(target=page_worker, args=(skalbehandles, erbehandletqueue, behandleslist, erbehandlet))
             p.daemon = True
             workers.append(p)
@@ -105,8 +128,7 @@ def run_page_workers(first: str, num_workers: int, table):
         tabwork = Thread(target=table_worker, args=(erbehandletqueue, table, num_workers))
         tabwork.start()
         for i in workers:
-            print(f"joining {i}")
+            # print(f"joining {i}")
             i.join()
     except Exception as e:
         print(e)
-
