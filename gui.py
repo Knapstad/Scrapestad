@@ -88,17 +88,6 @@ class MainWindow(QMainWindow):
 
         def add_data(table):
             hent.setEnabled(False)
-            table.setColumnCount(7)
-            table.setHorizontalHeaderLabels(["Tittel", "Url","Actual url", "Redirected", "Description", "No. images", "Links"])
-            table.setRowCount(0)
-            table.setColumnWidth(0,200)
-            table.setColumnWidth(1,300)
-            table.setColumnWidth(2,300)
-            table.setColumnWidth(3,100)
-            table.setColumnWidth(4,500)
-            table.setColumnWidth(5,60)
-            table.setColumnWidth(6,500)
-
             if str(site.currentText()) == "alle":
                 run_page_workers(fragment.text(),5,table)
                 # bot = Bot()
@@ -196,6 +185,17 @@ class MainWindow(QMainWindow):
         fragment.setMaximumSize(200 - fragment_width, 20)
 
         my_table = QTableWidget()
+        my_table.setColumnCount(7)
+        my_table.setHorizontalHeaderLabels(["Tittel", "Url","Actual url", "Redirected", "Description", "# images", "Links"])
+        my_table.setRowCount(0)
+        my_table.setColumnWidth(0,200)
+        my_table.setColumnWidth(1,300)
+        my_table.setColumnWidth(2,300)
+        my_table.setColumnWidth(3,100)
+        my_table.setColumnWidth(4,500)
+        my_table.setColumnWidth(5,60)
+        my_table.setColumnWidth(6,500)
+        
         fragment_label.setMaximumSize(fragment_width + 5, 20)
         layout4.addWidget(fragment_label)
         layout4.addWidget(fragment)
