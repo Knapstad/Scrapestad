@@ -237,7 +237,7 @@ if __name__ == "__main__":
     app = QApplication(list(""))
 
     window = MainWindow()
-    window.resize(1000, 500)
+    window.showMaximized()
     window.show()
 
 
