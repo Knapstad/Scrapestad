@@ -90,39 +90,6 @@ class MainWindow(QMainWindow):
             hent.setEnabled(False)
             if str(site.currentText()) == "alle":
                 run_page_workers(fragment.text(),5,table)
-                # bot = Bot()
-                # html = bot.get_html(fragment.text())
-                # page = Page(html)
-                # currentRowCount = table.rowCount()
-                # table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
-                # table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
-                # table.setItem(currentRowCount, 2, QTableWidgetItem(f"{page.actual_url}"))
-                # table.setItem(currentRowCount, 3, QTableWidgetItem(f"{page.redirected}"))
-                # table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
-                # table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
-                # table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
-                # urls = page.get_links()
-                # # for i in range(3):
-                # for url in urls:
-                #     if ".obos.no" in url and "mail" not in url and "tel" not in url and "#main" not in url:
-                #         try:
-                #             html=bot.get_html(url)
-                #             page = Page(html)
-                #             currentRowCount = table.rowCount()
-                #             table.setRowCount(currentRowCount + 1)
-                #             table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
-                #             table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
-                #             table.setItem(currentRowCount, 2, QTableWidgetItem(f"{page.actual_url}"))
-                #             table.setItem(currentRowCount, 3, QTableWidgetItem(f"{page.redirected}"))
-                #             table.setItem(currentRowCount, 4, QTableWidgetItem(f"{page.description}"))
-                #             table.setItem(currentRowCount, 5, QTableWidgetItem(f"{len(page.images)}"))
-                #             table.setItem(currentRowCount, 6, QTableWidgetItem(f"{page.links}"))
-                #             for i in page.get_links():
-                #                 if i not in urls:
-                #                     urls.append(i)
-                #             antall.setText(f"Antall urler: {len(urls)}")
-                #         except Exception as e:
-                #             print(e)
 
             if str(site.currentText()) == "en":
                 bot = Bot()
