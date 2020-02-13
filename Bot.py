@@ -36,7 +36,6 @@ class Bot:
 
     def get_html(self, url) -> tuple:
         self.url = urlparse(url,scheme="https")
-        
         self.driver.get(self.url.geturl())
         html = self.driver.page_source
         actual_url = self.driver.current_url
