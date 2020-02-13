@@ -14,6 +14,7 @@ class Page:
         self.set_meta()
         self.set_links(self.html)
         self.set_images()
+        self.images_meta()
         self.set_title()
 
     def __enter__(self):
