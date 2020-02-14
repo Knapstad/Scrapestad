@@ -113,8 +113,8 @@ class MainWindow(QMainWindow):
                         for row in range(table.rowCount()):
                             data=[]
                             for column in range(table.columnCount()):
-                                data.append(table.item(row,column))
-                        writer.writerow(data)
+                                data.append(table.item(row,column).text())
+                            writer.writerow(data)
             except Exception as e:
                 print(e)
 
