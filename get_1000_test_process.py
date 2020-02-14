@@ -3,7 +3,7 @@ from Bot import Bot
 from multiprocessing import Process, Queue, Manager
 from threading import Thread
 from queue import Empty
-from test_multitprocess import page_worker
+from worker import page_worker
 import time
 import traceback
 import csv
