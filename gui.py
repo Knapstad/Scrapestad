@@ -67,10 +67,6 @@ class MainWindow(QMainWindow):
 
         def get_one(table):
             with Bot() as bot:
-                if not fragment.text().startswith("//"):
-                    url = f"//{fragment.text()}"
-                else:
-                    url = fragment.text()
                 html = bot.get_html(url)
                 page = Page(html)
                 currentRowCount = table.rowCount()
