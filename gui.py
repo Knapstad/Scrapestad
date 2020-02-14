@@ -99,10 +99,10 @@ class MainWindow(QMainWindow):
 
         def lagre_data(table):
             try:
-                header = ["Tittel", "Url","Actual url", "Redirected", "Description", "No. images", "Links"]
+                header = ["Tittel", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"]
                 filename = QFileDialog.getSaveFileName(
                     caption="Lagre fil",
-                    directory=f"{fragment.text()}".lower(),
+                    directory=f"{fragment.text()}".replace(".","-").lower(),
                     filter="Csv (*.csv)",
                 )
 
@@ -110,10 +110,13 @@ class MainWindow(QMainWindow):
                     with open(filename[0], "w", newline="") as f:
                         writer = csv.writer(f)
                         writer.writerow(header)
-                        for i in range(table.rowCount()):
-                            writer.writerow([table.item(i,0).text(), table.item(i,1).text(), table.item(i,2).text(), table.item(i,3).text(), table.item(i,4).text(), table.item(i,5).text(), table.item(i,6).text()])
+                        for row in range(table.rowCount()):
+                            data=[]
+                            for column in range(table.columnCount()):
+                                data.append(table.item(row,column))
+                        writer.writerow(data)
             except Exception as e:
-                pritn(e)
+                print(e)
 
 
         layout1 = QHBoxLayout()
