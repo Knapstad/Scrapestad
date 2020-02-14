@@ -85,15 +85,13 @@ class MainWindow(QMainWindow):
                 table.setItem(currentRowCount, 7, QTableWidgetItem(f"{len(page.images_blank_alt)}"))
                 table.setItem(currentRowCount, 8, QTableWidgetItem(f"{len(page.images_missing_alt)}"))
                 table.setItem(currentRowCount, 9, QTableWidgetItem(f"{page.links}"))
-                # table.setRowHeight(currentRowCount, 500)
-                # table.resizeRowsToContents()
                 antall.setText(f"Antall urler: 1")
                 
 
         def add_data(table):
             hent.setEnabled(False)
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(),5,table)
+                run_page_workers(fragment.text(),4,table,antall)
 
             if str(site.currentText()) == "en":
                 get_one(table)
