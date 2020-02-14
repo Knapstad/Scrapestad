@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from Page import Page
 from Bot import Bot
-from test_multitprocess import table_worker, page_worker, run_page_workers
+from workers import table_worker, page_worker, run_page_workers
 # from test import  
 import typing
 
