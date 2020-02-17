@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         def add_data(table):
             hent.setEnabled(False)
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(),4,table,antall)
+                run_page_workers(fragment.text(), 4, table, antall, crawl_sub.isChecked())
 
             if str(site.currentText()) == "en":
                 get_one(table)
