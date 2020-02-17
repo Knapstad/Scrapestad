@@ -4,9 +4,12 @@ from PyQt5.QtGui import *
 from Page import Page
 from Bot import Bot
 from workers import table_worker, page_worker, run_page_workers
-# from test import  
-import typing
+from config.config import set_config
 
+from urllib.parse import urlparse
+import tldextract
+
+import typing
 import time
 import csv
 import sys
@@ -86,8 +89,15 @@ class MainWindow(QMainWindow):
 
         def add_data(table):
             hent.setEnabled(False)
+            domain = tldextract.extract(fragment.text())
+
+            if crawl_sub.isChecked():
+                set_config("domain", ".".join(domain[1:]))
+            else:
+                set_config("domain", ".".join(domain))
+
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(), 4, table, antall, crawl_sub.isChecked())
+                run_page_workers(fragment.text(), 4, table, antall)
 
             if str(site.currentText()) == "en":
                 get_one(table)
