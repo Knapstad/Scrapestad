@@ -35,7 +35,7 @@ class Bot:
             return driver
 
     def get_html(self, url) -> tuple:
-        if not url.startswith("//"):
+        if not url.startswith("//") and not url.startswith("http"):
             url = f"//{url}"
         self.url = urlparse(url,scheme="https")
         self.driver.get(self.url.geturl())
