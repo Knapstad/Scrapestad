@@ -1,1 +1,1 @@
-{"domain": "obos.no"}
+{"domain": "", "negate": ["page=", "-jpeg", "pid=", "/calendar/createevent", "#", "-pdf", "/dokumentfil-"]}
