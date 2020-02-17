@@ -11,7 +11,7 @@ import traceback
 
 
 
-def page_worker(work_queue, worked_queue, behandleslist, erbehandlet):
+def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isprocessed: dict, subdomain: bool):
     empty=0
     try:
         # print(f"Starting worker: {workerid}")
@@ -33,21 +33,21 @@ def page_worker(work_queue, worked_queue, behandleslist, erbehandlet):
                 if empty >= 3:
                     return
                 continue
-            if url in erbehandlet:
+            if url in isprocessed:
                 continue
             html = bot.get_html(url)
             page = Page(html)
             page.soup=None
             page.html=None
             worked_queue.put(page)
-            erbehandlet[page.url]=1
-            erbehandlet[page.actual_url]=1
+            isprocessed[page.url]=1
+            isprocessed[page.actual_url]=1
             # erbehandlet.append(page.actual_url)
             negate = ["page=", "-jpeg", "pid=", "/calendar/createevent", "#", "-pdf", "/dokumentfil-"]
             for url in page.links:
-                if url not in behandleslist and "www.obos.no" in url and not any(word in url for word in negate):
+                if url not in tobeprocessed and "www.obos.no" in url and not any(word in url for word in negate):
                     work_queue.put(url)
-                    behandleslist[url]=1
+                    tobeprocessed[url]=1
             # print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
 
 
@@ -56,23 +56,23 @@ def page_worker(work_queue, worked_queue, behandleslist, erbehandlet):
         worked_queue.put("done")
         # print(f"Pageworker {workerid} done")
 
-def threader(work_queue, worked_queue, behandleslist, erbehandlet, workerid, process):
+def threader(work_queue, worked_queue, tobeprocessed, isprocessed, workerid, process):
     workers=[]
     work_queue=work_queue
     worked_queue=worked_queue
-    behandleslist=behandleslist
-    erbehandlet=erbehandlet
+    tobeprocessed=tobeprocessed
+    isprocessed=isprocessed
     workerid=workerid
     process=process
     for i in range(process):
-        p = Thread(target=page_worker, args=(work_queue, worked_queue, behandleslist, erbehandlet, workerid))
+        p = Thread(target=page_worker, args=(work_queue, worked_queue, tobeprocessed, isprocessed, workerid))
         workers.append(p)
     for i in workers:
         i.start()
     for i in workers:
         i.join()
 
-def table_worker(queue, table, num_workers, antall, erbehandlet, behandleslist):
+def table_worker(queue: Queue, table: QTableView, num_workers: int, antall: QLabel, isprocessed: dict, tobeprocessed: dict):
     num_workers=num_workers
     done=0
     # print("I am TableWorker!!")
@@ -98,7 +98,7 @@ def table_worker(queue, table, num_workers, antall, erbehandlet, behandleslist):
             table.setItem(currentRowCount, 7, QTableWidgetItem(f"{len(page.images_blank_alt)}"))
             table.setItem(currentRowCount, 8, QTableWidgetItem(f"{len(page.images_missing_alt)}"))
             table.setItem(currentRowCount, 9, QTableWidgetItem(f"{page.links}"))
-            antall.setText(f"Er behandlet: {len(erbehandlet)}\nSkal behandles: {len(behandleslist)}\nI tabell: {currentRowCount}")
+            antall.setText(f"Er behandlet: {len(isprocessed)}\nSkal behandles: {len(tobeprocessed)}\nI tabell: {currentRowCount}")
 
         except Empty:
                 continue
@@ -106,24 +106,24 @@ def table_worker(queue, table, num_workers, antall, erbehandlet, behandleslist):
             traceback.print_exc()
 
 
-def run_page_workers(first: str, num_workers: int, table, antall):
+def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: int, subdomain: bool):
     table=table
     manager= Manager()
-    skalbehandles = Queue()
-    erbehandletqueue = Queue()
-    behandleslist = manager.dict()
-    erbehandlet = manager.dict()
+    url_queue = Queue()
+    table_queue = Queue()
+    tobeprocessed = manager.dict()
+    isprocessed = manager.dict()
     workers=[]
     try:
-        skalbehandles.put(first)
+        url_queue.put(first)
         for i in range(num_workers):
             # print("starting process " + str(i))
-            p = Process(target=page_worker, args=(skalbehandles, erbehandletqueue, behandleslist, erbehandlet))
+            p = Process(target=page_worker, args=(url_queue, table_queue, tobeprocessed, isprocessed, subdomain))
             p.daemon = True
             workers.append(p)
         for i in workers:
             i.start()
-        tabwork = Thread(target=table_worker, args=(erbehandletqueue, table, num_workers, antall, erbehandlet, behandleslist))
+        tabwork = Thread(target=table_worker, args=(table_queue, table, num_workers, antall, isprocessed, tobeprocessed))
         tabwork.start()
         for i in workers:
             # print(f"joining {i}")
