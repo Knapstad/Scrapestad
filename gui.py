@@ -4,9 +4,12 @@ from PyQt5.QtGui import *
 from Page import Page
 from Bot import Bot
 from workers import table_worker, page_worker, run_page_workers
-# from test import  
-import typing
+from config.config import set_config
 
+from urllib.parse import urlparse
+import tldextract
+
+import typing
 import time
 import csv
 import sys
@@ -86,8 +89,15 @@ class MainWindow(QMainWindow):
 
         def add_data(table):
             hent.setEnabled(False)
+            domain = tldextract.extract(fragment.text())
+
+            if crawl_sub.isChecked():
+                set_config("domain", ".".join(domain[1:]))
+            else:
+                set_config("domain", ".".join(domain))
+
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(),4,table,antall)
+                run_page_workers(fragment.text(), 4, table, antall)
 
             if str(site.currentText()) == "en":
                 get_one(table)
@@ -116,30 +126,39 @@ class MainWindow(QMainWindow):
 
 
         layout1 = QHBoxLayout()
-        layout2 = QVBoxLayout()
-        layout3 = QVBoxLayout()
-        layout4 = QHBoxLayout()
-        layout5 = QHBoxLayout()
+        left_sidebar = QVBoxLayout()
+        table_layout = QVBoxLayout()
+        fragment_layout = QHBoxLayout()
+        site_layout = QHBoxLayout()
+        crawl_layout = QHBoxLayout()
+        button_layout = QVBoxLayout()
 
         layout1.setContentsMargins(0, 0, 0, 0)
-        layout2.setContentsMargins(30, 30, 40, 0)
-        layout4.setContentsMargins(0, 0, 0, 0)
-        layout5.setContentsMargins(0, 0, 0, 0)
+        left_sidebar.setContentsMargins(30, 30, 40, 0)
+        fragment_layout.setContentsMargins(0, 0, 0, 0)
+        site_layout.setContentsMargins(0, 0, 0, 0)
+        crawl_layout.setContentsMargins(0,0,0,25)
 
-        layout1.setSpacing(20)
-        layout2.setSpacing(10)
-        layout4.setSpacing(2)
-        layout5.setSpacing(0)
+        layout1.setSpacing(40)
+        left_sidebar.setSpacing(10)
+        fragment_layout.setSpacing(2)
+        site_layout.setSpacing(0)
+        crawl_layout.setSpacing(0)
+        button_layout.setSpacing(0)
 
-        layout2.setAlignment(Qt.AlignVCenter)
+        left_sidebar.setAlignment(Qt.AlignVCenter)
 
-        fragment_label = QLabel("Urlfragment:")
+        fragment_label = QLabel("Url:")
         fragment = QLineEdit("")
         fragment.returnPressed.connect(execute_add_data)
         fragment_width = (
             fragment_label.fontMetrics().boundingRect(fragment_label.text()).width()
         )
         fragment.setMaximumSize(200 - fragment_width, 20)
+
+        crawl_label = QLabel("Crawl subdomains:")
+        crawl_sub = QCheckBox()
+
 
         my_table = QTableWidget()
         my_table.setColumnCount(10)
@@ -158,14 +177,17 @@ class MainWindow(QMainWindow):
         my_table.setItemDelegateForColumn(8, delegate)
         
         fragment_label.setMaximumSize(fragment_width + 5, 20)
-        layout4.addWidget(fragment_label)
-        layout4.addWidget(fragment)
+        fragment_layout.addWidget(fragment_label)
+        fragment_layout.addWidget(fragment)
 
         site_label = QLabel("Hvilken side:")
         site = QComboBox()
         site.addItems(["alle", "en"])
-        layout5.addWidget(site_label)
-        layout5.addWidget(site)
+        site_layout.addWidget(site_label)
+        site_layout.addWidget(site)
+
+        crawl_layout.addWidget(crawl_label)
+        crawl_layout.addWidget(crawl_sub)
 
         hent = QPushButton("Hent urler")
         hent.setMaximumSize(200, 30)
@@ -175,19 +197,23 @@ class MainWindow(QMainWindow):
         lagre.clicked.connect(lambda: lagre_data(my_table))
         antall = QLabel("")
 
+
         shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         shortcut.activated.connect(lambda: lagre_data(my_table))
 
-        layout2.addLayout(layout5)
-        layout2.addLayout(layout4)
-        layout2.addWidget(hent)
-        layout2.addWidget(lagre)
-        layout2.addWidget(antall)
-        layout1.addLayout(layout2)
+        button_layout.addWidget(hent)
+        button_layout.addWidget(lagre)
+        button_layout.addWidget(antall)
 
-        layout3.addWidget(my_table)
+        left_sidebar.addLayout(site_layout)
+        left_sidebar.addLayout(fragment_layout)
+        left_sidebar.addLayout(crawl_layout)
+        left_sidebar.addLayout(button_layout)
+        layout1.addLayout(left_sidebar)
 
-        layout1.addLayout(layout3)
+        table_layout.addWidget(my_table)
+
+        layout1.addLayout(table_layout)
 
         widget = QWidget()
         widget.setLayout(layout1)
