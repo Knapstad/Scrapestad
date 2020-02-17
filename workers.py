@@ -37,15 +37,15 @@ def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isp
                 continue
             html = bot.get_html(url)
             page = Page(html)
-            page.soup=None
-            page.html=None
+            page.soup = None
+            page.html = None
             worked_queue.put(page)
-            isprocessed[page.url]=1
-            isprocessed[page.actual_url]=1
+            isprocessed[page.url] = 1
+            isprocessed[page.actual_url] = 1
             # erbehandlet.append(page.actual_url)
             negate = ["page=", "-jpeg", "pid=", "/calendar/createevent", "#", "-pdf", "/dokumentfil-"]
             for url in page.links:
-                if url not in tobeprocessed and "www.obos.no" in url and not any(word in url for word in negate):
+                if url not in tobeprocessed and domain in url and not any(word in url for word in negate):
                     work_queue.put(url)
                     tobeprocessed[url]=1
             # print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
