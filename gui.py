@@ -120,18 +120,21 @@ class MainWindow(QMainWindow):
         table_layout = QVBoxLayout()
         fragment_layout = QHBoxLayout()
         site_layout = QHBoxLayout()
+        crawl_layout = QHBoxLayout()
+        button_layout = QVBoxLayout()
 
         layout1.setContentsMargins(0, 0, 0, 0)
         left_sidebar.setContentsMargins(30, 30, 40, 0)
         fragment_layout.setContentsMargins(0, 0, 0, 0)
         site_layout.setContentsMargins(0, 0, 0, 0)
-        
-        
+        crawl_layout.setContentsMargins(0,0,0,25)
 
-        layout1.setSpacing(20)
+        layout1.setSpacing(40)
         left_sidebar.setSpacing(10)
         fragment_layout.setSpacing(2)
         site_layout.setSpacing(0)
+        crawl_layout.setSpacing(0)
+        button_layout.setSpacing(0)
 
         left_sidebar.setAlignment(Qt.AlignVCenter)
 
@@ -143,7 +146,9 @@ class MainWindow(QMainWindow):
         )
         fragment.setMaximumSize(200 - fragment_width, 20)
 
-        crawl_sub = QCheckBox("Crawl subdomains")
+        crawl_label = QLabel("Crawl subdomains:")
+        crawl_sub = QCheckBox()
+
 
         my_table = QTableWidget()
         my_table.setColumnCount(10)
@@ -171,6 +176,9 @@ class MainWindow(QMainWindow):
         site_layout.addWidget(site_label)
         site_layout.addWidget(site)
 
+        crawl_layout.addWidget(crawl_label)
+        crawl_layout.addWidget(crawl_sub)
+
         hent = QPushButton("Hent urler")
         hent.setMaximumSize(200, 30)
         lagre = QPushButton("Lagre urler")
@@ -179,15 +187,18 @@ class MainWindow(QMainWindow):
         lagre.clicked.connect(lambda: lagre_data(my_table))
         antall = QLabel("")
 
+
         shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         shortcut.activated.connect(lambda: lagre_data(my_table))
 
+        button_layout.addWidget(hent)
+        button_layout.addWidget(lagre)
+        button_layout.addWidget(antall)
+
         left_sidebar.addLayout(site_layout)
         left_sidebar.addLayout(fragment_layout)
-        left_sidebar.addWidget(crawl_sub)
-        left_sidebar.addWidget(hent)
-        left_sidebar.addWidget(lagre)
-        left_sidebar.addWidget(antall)
+        left_sidebar.addLayout(crawl_layout)
+        left_sidebar.addLayout(button_layout)
         layout1.addLayout(left_sidebar)
 
         table_layout.addWidget(my_table)
