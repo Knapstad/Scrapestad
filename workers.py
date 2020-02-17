@@ -1,17 +1,22 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from urllib.parse import urlparse
+
 from Page import Page
 from Bot import Bot
+
 from multiprocessing import Process, Queue, Manager
 from threading import Thread
 from queue import Empty
+
+from config.config import config 
 import time
 import traceback
 
 
 
-def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isprocessed: dict, subdomain: bool):
+def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isprocessed: dict):
     empty=0
     try:
         # print(f"Starting worker: {workerid}")
@@ -43,9 +48,9 @@ def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isp
             isprocessed[page.url] = 1
             isprocessed[page.actual_url] = 1
             # erbehandlet.append(page.actual_url)
-            negate = ["page=", "-jpeg", "pid=", "/calendar/createevent", "#", "-pdf", "/dokumentfil-"]
+            negate = config["negate"]
             for url in page.links:
-                if url not in tobeprocessed and domain in url and not any(word in url for word in negate):
+                if url not in tobeprocessed and config["domain"] in url and not any(word in url for word in negate):
                     work_queue.put(url)
                     tobeprocessed[url]=1
             # print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
@@ -106,7 +111,7 @@ def table_worker(queue: Queue, table: QTableView, num_workers: int, antall: QLab
             traceback.print_exc()
 
 
-def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: int, subdomain: bool):
+def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: int):
     table=table
     manager= Manager()
     url_queue = Queue()
@@ -118,7 +123,7 @@ def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: in
         url_queue.put(first)
         for i in range(num_workers):
             # print("starting process " + str(i))
-            p = Process(target=page_worker, args=(url_queue, table_queue, tobeprocessed, isprocessed, subdomain))
+            p = Process(target=page_worker, args=(url_queue, table_queue, tobeprocessed, isprocessed))
             p.daemon = True
             workers.append(p)
         for i in workers:
