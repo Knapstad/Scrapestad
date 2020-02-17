@@ -11,5 +11,5 @@ def set_config(key, value):
 
 def clear_config():
     config = {}
-        with open("config/config.json", "w") as file:
-            json.dump(config, file)
+    with open("config/config.json", "w") as file:
+        json.dump(config, file)
