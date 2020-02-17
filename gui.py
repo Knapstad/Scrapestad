@@ -116,30 +116,34 @@ class MainWindow(QMainWindow):
 
 
         layout1 = QHBoxLayout()
-        layout2 = QVBoxLayout()
-        layout3 = QVBoxLayout()
-        layout4 = QHBoxLayout()
-        layout5 = QHBoxLayout()
+        left_sidebar = QVBoxLayout()
+        table_layout = QVBoxLayout()
+        fragment_layout = QHBoxLayout()
+        site_layout = QHBoxLayout()
 
         layout1.setContentsMargins(0, 0, 0, 0)
-        layout2.setContentsMargins(30, 30, 40, 0)
-        layout4.setContentsMargins(0, 0, 0, 0)
-        layout5.setContentsMargins(0, 0, 0, 0)
+        left_sidebar.setContentsMargins(30, 30, 40, 0)
+        fragment_layout.setContentsMargins(0, 0, 0, 0)
+        site_layout.setContentsMargins(0, 0, 0, 0)
+        
+        
 
         layout1.setSpacing(20)
-        layout2.setSpacing(10)
-        layout4.setSpacing(2)
-        layout5.setSpacing(0)
+        left_sidebar.setSpacing(10)
+        fragment_layout.setSpacing(2)
+        site_layout.setSpacing(0)
 
-        layout2.setAlignment(Qt.AlignVCenter)
+        left_sidebar.setAlignment(Qt.AlignVCenter)
 
-        fragment_label = QLabel("Urlfragment:")
+        fragment_label = QLabel("Url:")
         fragment = QLineEdit("")
         fragment.returnPressed.connect(execute_add_data)
         fragment_width = (
             fragment_label.fontMetrics().boundingRect(fragment_label.text()).width()
         )
         fragment.setMaximumSize(200 - fragment_width, 20)
+
+        crawl_sub = QCheckBox("Crawl subdomains")
 
         my_table = QTableWidget()
         my_table.setColumnCount(10)
@@ -158,14 +162,14 @@ class MainWindow(QMainWindow):
         my_table.setItemDelegateForColumn(8, delegate)
         
         fragment_label.setMaximumSize(fragment_width + 5, 20)
-        layout4.addWidget(fragment_label)
-        layout4.addWidget(fragment)
+        fragment_layout.addWidget(fragment_label)
+        fragment_layout.addWidget(fragment)
 
         site_label = QLabel("Hvilken side:")
         site = QComboBox()
         site.addItems(["alle", "en"])
-        layout5.addWidget(site_label)
-        layout5.addWidget(site)
+        site_layout.addWidget(site_label)
+        site_layout.addWidget(site)
 
         hent = QPushButton("Hent urler")
         hent.setMaximumSize(200, 30)
@@ -178,16 +182,17 @@ class MainWindow(QMainWindow):
         shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         shortcut.activated.connect(lambda: lagre_data(my_table))
 
-        layout2.addLayout(layout5)
-        layout2.addLayout(layout4)
-        layout2.addWidget(hent)
-        layout2.addWidget(lagre)
-        layout2.addWidget(antall)
-        layout1.addLayout(layout2)
+        left_sidebar.addLayout(site_layout)
+        left_sidebar.addLayout(fragment_layout)
+        left_sidebar.addWidget(crawl_sub)
+        left_sidebar.addWidget(hent)
+        left_sidebar.addWidget(lagre)
+        left_sidebar.addWidget(antall)
+        layout1.addLayout(left_sidebar)
 
-        layout3.addWidget(my_table)
+        table_layout.addWidget(my_table)
 
-        layout1.addLayout(layout3)
+        layout1.addLayout(table_layout)
 
         widget = QWidget()
         widget.setLayout(layout1)
