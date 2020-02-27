@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
             worker = Worker(add_data, my_table)
             self.threadpool.start(worker)
 
-        def get_one(table):
+        def get_one(table: QTableWidget, url: str):
             with Bot() as bot:
                 html = bot.get_html(url)
                 page = Page(html)
@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
                 run_page_workers(fragment.text(), 4, table, antall)
 
             if str(site.currentText()) == "en":
-                get_one(table)
+                get_one(table, fragment.text())
             hent.setEnabled(True)
 
         def lagre_data(table):
