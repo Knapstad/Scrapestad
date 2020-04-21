@@ -7,18 +7,26 @@ import csv
 
 async def get(urls):
     browser = await launch()
-    start = time.time()
-    while True:
-        url = await urls.get()
-        print(f"getting url {url[1]}")
-        page = await browser.newPage()
-        await page.goto(url[0])
-        element = await page.querySelector('title')
-        title = await page.evaluate('(element) => element.textContent', element)
-        await asyncio.sleep(random.random())
-        print(f"{title} of {url[1]}")
-        urls.task_done()    
-    print(f"{(time.time()-start)*1000}")
+    
+    while not urls.empty():
+        try:
+            url = urls.get_nowait()
+            print("-----------------------")
+            print(f"Getting url {url[1]}")
+            print("-----------------------\n")
+            page = await browser.newPage()
+            await page.goto(url[0])
+            element = await page.querySelector('title')
+            title = await page.evaluate('(element) => element.textContent', element)
+            # await asyncio.sleep(random.random())
+            print("-----------------------")
+            print(f"Return title: {title} of url {url[1]}")
+            print("-----------------------\n")
+            urls.task_done()
+        except Exception as e:
+            print(e)
+            break    
+    
     await browser.close()
 
 async def get_urls():
@@ -33,9 +41,11 @@ async def get_urls():
         return urls
 
 async def main():
+    start = time.time()
     urls = await get_urls()
     await asyncio.gather(
         
+        get(urls),
         get(urls),
         get(urls),
         get(urls),
@@ -45,5 +55,7 @@ async def main():
         
     )
     urls.join()
+    print(f"____DONE____ in: ")
+    print(f"{(time.time()-start)}")
 
-asyncio.run(main())
+# asyncio.run(main())
