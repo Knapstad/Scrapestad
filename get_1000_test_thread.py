@@ -12,19 +12,20 @@ import csv
 if __name__ == "__main__":
     processes = 4
     # manager= Manager()
-    skalbehandles = Queue()
-    erbehandletqueue = Queue()
-    behandleslist = dict()
-    erbehandlet = dict()
+    work_queue = Queue()
+    worked_queue = Queue()
+    tobeprocessed = dict()
+    isprocessed = dict()
     workers=[]
-    with open("urls.csv", newline="") as file:
-        reader = csv.reader(file)
-        urls = [i[0] for i in reader if len(i)>0]
-    for i in urls[:300]:
-        skalbehandles.put(i)
+    # with open("urls.csv", newline="") as file:
+    #     reader = csv.reader(file)
+    #     urls = [i[0] for i in reader if len(i)>0]
+    urls=["http://example.com"]*200
+    for i in urls:
+        work_queue.put(i)
     work=[]
     for i in range(processes):
-        p=Thread(target=page_worker, args=(skalbehandles, erbehandletqueue,behandleslist,erbehandlet, i))
+        p=Thread(target=page_worker, args=(work_queue, worked_queue,tobeprocessed,isprocessed))
         work.append(p)
     start=time.time()
     for i in work:
