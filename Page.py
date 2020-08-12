@@ -49,15 +49,15 @@ class Page:
         metas = self.soup.findAll("meta")
         for i in metas:
             if i.get("name") == "description":
-                self.description = i.get("content","")
+                self.description = i.get("content", "")
             if i.get("name") == "title":
-                self.meta_title = i.get("content","")
+                self.meta_title = i.get("content", "")
 
     def set_links(self, html):
         self.links = []
         soup = BS(html, "lxml")
         for link in soup.findAll("a"):
-            if link.has_attr("href"):
+            if link.has_attr("href") and link["href"] != "javascript: void(0)":
                 self.links.append(urljoin(self.actual_url, link["href"]))
 
     def get_links(self):
@@ -69,7 +69,7 @@ class Page:
         self.images = []
         imgs = self.soup.findAll("img")
         for i in imgs:
-            self.images.append((urljoin(self.url, i.get("src")), i.get("alt","")))
+            self.images.append((urljoin(self.url, i.get("src")), i.get("alt", "")))
 
     def get_images(self):
         if not self.images:
