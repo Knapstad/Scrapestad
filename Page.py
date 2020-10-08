@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as BS
 from urllib.parse import urljoin
+from config.config import config
 
 
 class Page:
@@ -56,7 +57,7 @@ class Page:
     def set_links(self, html):
         self.links = []
         soup = BS(html, "lxml")
-        negate =["jacascript: void", "#"]
+        negate = config["negate"]
         for link in soup.findAll("a"):
             if link.has_attr("href") and not any([neg in link["href"] for neg in negate]):
                 self.links.append(urljoin(self.actual_url, link["href"]))
