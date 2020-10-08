@@ -56,8 +56,9 @@ class Page:
     def set_links(self, html):
         self.links = []
         soup = BS(html, "lxml")
+        negate =["jacascript: void", "#"]
         for link in soup.findAll("a"):
-            if link.has_attr("href") and link["href"] != "javascript: void(0)":
+            if link.has_attr("href") and not any([neg in link["href"] for neg in negate]):
                 self.links.append(urljoin(self.actual_url, link["href"]))
 
     def get_links(self):

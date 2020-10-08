@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import tldextract
 
 import typing
+import config
 import time
 import csv
 import sys
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
                 set_config("domain", ".".join(domain))
 
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(), 4, table, antall)
+                run_page_workers(fragment.text(), 5, table, antall)
 
             if str(site.currentText()) == "en":
                 get_one(table, fragment.text())
@@ -113,14 +114,17 @@ class MainWindow(QMainWindow):
                 )
 
                 if filename[0]:
-                    with open(filename[0], "w", newline="") as f:
+                    with open(filename[0], "w", newline="", encoding='utf-8') as f:
                         writer = csv.writer(f)
                         writer.writerow(header)
                         for row in range(table.rowCount()):
                             data=[]
                             for column in range(table.columnCount()):
                                 data.append(table.item(row,column).text())
-                            writer.writerow(data)
+                            try:
+                                writer.writerow(data)
+                            except Exception as e:
+                                print(f"could not write {data} -- {e}")
             except Exception as e:
                 print(e)
 
