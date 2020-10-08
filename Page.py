@@ -73,7 +73,7 @@ class Page:
 
     def get_images(self):
         if not self.images:
-            set_images(self)
+            self.set_images()
         return self.images
 
     def set_title(self):
