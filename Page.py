@@ -61,6 +61,7 @@ class Page:
         for link in soup.findAll("a"):
             if link.has_attr("href") and not any([neg in link["href"] for neg in negate]):
                 self.links.append(urljoin(self.actual_url, link["href"]))
+        self.links = list(set(self.links))
 
     def get_links(self):
         if not self.links:
