@@ -1,3 +1,4 @@
+from re import A
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -5,6 +6,7 @@ from Page import Page
 from Bot import Bot
 from workers import table_worker, page_worker, run_page_workers
 from config.config import set_config
+from multiprocessing import Value
 
 from urllib.parse import urlparse
 import tldextract
@@ -17,7 +19,8 @@ import sys
 import os
 
 
-
+RUNNING = Value("i",0)
+ACTIVE = Value("i",1)
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -65,9 +68,24 @@ class MainWindow(QMainWindow):
         self.threadpool = QThreadPool()
 
         def execute_add_data():
-            antall.setText("Henter data...")
-            worker = Worker(add_data, my_table)
-            self.threadpool.start(worker)
+            if not RUNNING.value :
+                # print(f"Active: {bool(ACTIVE)} and running: {bool(RUNNING)} ")
+                antall.setText("Henter data...")
+                worker = Worker(add_data, my_table, ACTIVE)
+                RUNNING.value = 1
+                hent.setText("Pause")
+                
+                self.threadpool.start(worker)
+            elif ACTIVE.value and RUNNING.value:
+                # print(f"Active: {bool(ACTIVE.value)} and running: {bool(RUNNING.value)} ")
+                ACTIVE.value = 0
+                hent.setText("Resume")
+            elif not ACTIVE.value and RUNNING.value:
+                # print(f"Active: {bool(ACTIVE.value)} and running: {bool(RUNNING.value)} ")
+                # print(ACTIVE.value)
+                ACTIVE.value = 1
+                hent.setText("Pause")
+            
 
         def get_one(table: QTableWidget, url: str):
             with Bot() as bot:
@@ -88,8 +106,7 @@ class MainWindow(QMainWindow):
                 antall.setText(f"Antall urler: 1")
                 
 
-        def add_data(table):
-            hent.setEnabled(False)
+        def add_data(table , run):
             domain = tldextract.extract(fragment.text())
 
             if crawl_sub.isChecked():
@@ -98,11 +115,12 @@ class MainWindow(QMainWindow):
                 set_config("domain", ".".join(domain))
 
             if str(site.currentText()) == "alle":
-                run_page_workers(fragment.text(), 5, table, antall)
+                run_page_workers(fragment.text(), 5, table, antall, run)
 
             if str(site.currentText()) == "en":
                 get_one(table, fragment.text())
-            hent.setEnabled(True)
+            hent.setText("Fetch Urls")
+            
 
         def lagre_data(table):
             try:
