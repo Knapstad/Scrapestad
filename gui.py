@@ -134,7 +134,14 @@ class MainWindow(QMainWindow):
         crawl_layout = QHBoxLayout()
         button_layout = QVBoxLayout()
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('File')
+        
+        exit = QAction("Quit",self)
+        exit.triggered.connect(sys.exit)
+        
+        
+        fileMenu = menubar.addMenu("File")
+        fileMenu.addAction("Options")
+        fileMenu.addAction(exit)
 
         layout1.setContentsMargins(0, 0, 0, 0)
         left_sidebar.setContentsMargins(30, 30, 40, 0)
