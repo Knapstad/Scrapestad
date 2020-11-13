@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -35,44 +36,47 @@ class Worker(QRunnable):
 
 
 
-def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isprocessed: dict):
+def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isprocessed: dict, run: Value):
     empty=0
     try:
         # print(f"Starting worker: {workerid}")
         bot = Bot()
         while not work_queue.empty():
-            # print(f"worker: {workerid} queue not epmpty")
-            
-            # if len(erbehandlet) > 30:
-            #     break
-            try:
-                # print(f" worker: {workerid} getting from queue")
-                url = work_queue.get(timeout=1)
-                # print(f" worker: {workerid} {url}") 
-            except Empty:
-                # print(f" worker: {workerid} in except")
-                empty+=1
-                # print(f" worker: {workerid} {empty}")
-                # time.sleep(2)
-                if empty >= 3:
-                    return
+            if not run.value:
                 continue
-            if url in isprocessed:
-                continue
-            html = bot.get_html(url)
-            page = Page(html)
-            page.soup = None
-            page.html = None
-            worked_queue.put(page)
-            isprocessed[page.url] = 1
-            isprocessed[page.actual_url] = 1
-            # erbehandlet.append(page.actual_url)
-            negate = config["negate"]
-            for url in page.links:
-                if url not in tobeprocessed and config["domain"] in url and not any(word in url for word in negate):
-                    work_queue.put(url)
-                    tobeprocessed[url]=1
-            # print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
+            else:
+                # print(f"worker: {workerid} queue not epmpty")
+                
+                # if len(erbehandlet) > 30:
+                #     break
+                try:
+                    # print(f" worker: {workerid} getting from queue")
+                    url = work_queue.get(timeout=1)
+                    # print(f" worker: {workerid} {url}") 
+                except Empty:
+                    # print(f" worker: {workerid} in except")
+                    empty+=1
+                    # print(f" worker: {workerid} {empty}")
+                    # time.sleep(2)
+                    if empty >= 3:
+                        return
+                    continue
+                if url in isprocessed:
+                    continue
+                html = bot.get_html(url)
+                page = Page(html)
+                page.soup = None
+                page.html = None
+                worked_queue.put(page)
+                isprocessed[page.url] = 1
+                isprocessed[page.actual_url] = 1
+                # erbehandlet.append(page.actual_url)
+                negate = config["negate"]
+                for url in page.links:
+                    if url not in tobeprocessed and config["domain"] in url and not any(word in url for word in negate):
+                        work_queue.put(url)
+                        tobeprocessed[url]=1
+                # print(f"\rIn work queue: {work_queue.qsize()}, In worked queue {worked_queue.qsize()}, er behandlet: {len(erbehandlet)}", end="")
 
 
     finally:
@@ -130,7 +134,7 @@ def table_worker(queue: Queue, table: QTableView, num_workers: int, antall: QLab
             traceback.print_exc()
 
 
-def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: int):
+def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: int, run: Value):
     table=table
     manager= Manager()
     url_queue = Queue()
@@ -142,7 +146,7 @@ def run_page_workers(first: str, num_workers: int, table: QTabWidget, antall: in
         url_queue.put(first)
         for i in range(num_workers):
             # print("starting process " + str(i))
-            p = Process(target=page_worker, args=(url_queue, table_queue, tobeprocessed, isprocessed))
+            p = Process(target=page_worker, args=(url_queue, table_queue, tobeprocessed, isprocessed, run))
             p.daemon = True
             workers.append(p)
         for i in workers:
