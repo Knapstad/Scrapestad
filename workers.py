@@ -14,6 +14,25 @@ from config.config import config
 import time
 import traceback
 
+class Worker(QRunnable):
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        
+
+    @pyqtSlot()
+    def run(self):
+        """
+        Initialise the runner function with passed args, kwargs.
+        """
+        try:
+            self.fn(*self.args, **self.kwargs)
+        except Exception as e:
+            print(e)
+
 
 
 def page_worker(work_queue: Queue, worked_queue: Queue, tobeprocessed: dict, isprocessed: dict):
