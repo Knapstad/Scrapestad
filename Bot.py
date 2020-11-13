@@ -29,7 +29,7 @@ class Bot:
             options.add_argument("--log-level=3")
             options.add_experimental_option("excludeSwitches", ["enable-logging"])
             options.add_argument("--silent")
-            options.add_argument("user-agent=Obosbot")
+            options.add_argument("user-agent=Scrapestad bot")
             driver = webdriver.Chrome(executable_path=r"chromedriver.exe", options=options)
             # print(f"driver {self.ID} loaded")
             return driver

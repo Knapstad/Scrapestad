@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        self.setWindowTitle("Knapstad -  OBOS")
+        self.setWindowTitle("Scrapestad SEOscraper")
         self.left = 500
         self.top = 500
         self.setWindowIcon(QIcon(resource_path("icon2.png")))
