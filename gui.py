@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from Page import Page
 from Bot import Bot
-from workers import table_worker, page_worker, run_page_workers
+from workers import run_page_workers, Worker
 from config.config import set_config
 
 from urllib.parse import urlparse
@@ -28,27 +28,6 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
-
-
-class Worker(QRunnable):
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-        
-
-    @pyqtSlot()
-    def run(self):
-        """
-        Initialise the runner function with passed args, kwargs.
-        """
-        try:
-            self.fn(*self.args, **self.kwargs)
-        except Exception as e:
-            print(e)
-
 class AlignDelegate(QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super(AlignDelegate, self).initStyleOption(option, index)
@@ -136,12 +115,15 @@ class MainWindow(QMainWindow):
         site_layout = QHBoxLayout()
         crawl_layout = QHBoxLayout()
         button_layout = QVBoxLayout()
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
 
         layout1.setContentsMargins(0, 0, 0, 0)
         left_sidebar.setContentsMargins(30, 30, 40, 0)
         fragment_layout.setContentsMargins(0, 0, 0, 0)
         site_layout.setContentsMargins(0, 0, 0, 0)
         crawl_layout.setContentsMargins(0,0,0,25)
+        table_layout.setContentsMargins(0,15,0,0)
 
         layout1.setSpacing(40)
         left_sidebar.setSpacing(10)
@@ -166,7 +148,7 @@ class MainWindow(QMainWindow):
 
         my_table = QTableWidget()
         my_table.setColumnCount(10)
-        my_table.setHorizontalHeaderLabels(["Tittel", "Url","Actual url", "Redirected", "Description", "images","images with alt", "images with blank alt", "images with no alt", "Links"])
+        my_table.setHorizontalHeaderLabels(["Title", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"])
         my_table.resizeColumnsToContents()
         my_table.setRowCount(0)
         my_table.setColumnWidth(0,200)
@@ -218,6 +200,7 @@ class MainWindow(QMainWindow):
         table_layout.addWidget(my_table)
 
         layout1.addLayout(table_layout)
+        # layout1.addLayout(fileMenu)
 
         widget = QWidget()
         widget.setLayout(layout1)
