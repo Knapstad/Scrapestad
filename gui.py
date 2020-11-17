@@ -133,12 +133,12 @@ class MainWindow(QMainWindow):
         self.optionsbutton.setMaximumSize(200, 30)
         self.optionsbutton.clicked.connect(self.options.show)
         self.hent.clicked.connect(self.execute_add_data)
-        self.lagre.clicked.connect(lambda: lagre_data(self.my_table))
+        self.lagre.clicked.connect(lambda: save_data(self.my_table))
         self.antall = QLabel("")
 
 
         shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
-        shortcut.activated.connect(lambda: lagre_data(self.my_table))
+        shortcut.activated.connect(lambda: save_data(self.my_table))
 
         self.button_layout.addWidget(self.hent)
         self.button_layout.addWidget(self.lagre)
@@ -214,7 +214,7 @@ class MainWindow(QMainWindow):
         self.hent.setText("Fetch Urls")
         
 
-    def lagre_data(self, table):
+    def save_data(self, table):
         try:
             header = ["Tittel", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"]
             filename = QFileDialog.getSaveFileName(
