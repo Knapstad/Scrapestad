@@ -1,6 +1,7 @@
 import sys
 import os
-print(f"Wd: {os.getcwd()}")
+
+
 if "windows" in os.getcwd():
     sys.path.insert(1,'..')
 else:
@@ -23,6 +24,7 @@ class OptionsWindow(QWidget):
         ignore.setFixedHeight(50)
         cancel = QPushButton("Cancel")
         cancel.setMaximumWidth(200)
+        cancel.clicked.connect(self.hide)
         save = QPushButton("Save")
         save.clicked.connect(lambda: self.save_settings(ignore))
         layout = QFormLayout()
