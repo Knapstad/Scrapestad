@@ -129,9 +129,6 @@ class MainWindow(QMainWindow):
         self.hent.setMaximumSize(200, 30)
         self.lagre = QPushButton("Lagre urler")
         self.lagre.setMaximumSize(200, 30)
-        self.optionsbutton = QPushButton("settings")
-        self.optionsbutton.setMaximumSize(200, 30)
-        self.optionsbutton.clicked.connect(self.options.show)
         self.hent.clicked.connect(self.execute_add_data)
         self.lagre.clicked.connect(lambda: save_data(self.my_table))
         self.antall = QLabel("")
@@ -142,7 +139,6 @@ class MainWindow(QMainWindow):
 
         self.button_layout.addWidget(self.hent)
         self.button_layout.addWidget(self.lagre)
-        self.button_layout.addWidget(self.optionsbutton)
         self.button_layout.addWidget(self.antall)
 
         self.left_sidebar.addLayout(self.site_layout)
