@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         self.table_layout = QVBoxLayout()
         self.fragment_layout = QHBoxLayout()
         self.site_layout = QHBoxLayout()
-        self.crawl_layout = QHBoxLayout()
+        # self.crawl_layout = QHBoxLayout()
         self.button_layout = QVBoxLayout()
         self.menubar = self.menuBar()
         
@@ -72,14 +72,14 @@ class MainWindow(QMainWindow):
         self.left_sidebar.setContentsMargins(30, 30, 40, 0)
         self.fragment_layout.setContentsMargins(0, 0, 0, 0)
         self.site_layout.setContentsMargins(0, 0, 0, 0)
-        self.crawl_layout.setContentsMargins(0,0,0,25)
+        # self.crawl_layout.setContentsMargins(0,0,0,25)
         self.table_layout.setContentsMargins(0,15,0,0)
 
         self.layout1.setSpacing(40)
         self.left_sidebar.setSpacing(10)
         self.fragment_layout.setSpacing(2)
         self.site_layout.setSpacing(0)
-        self.crawl_layout.setSpacing(0)
+        # self.crawl_layout.setSpacing(0)
         self.button_layout.setSpacing(0)
 
         self.left_sidebar.setAlignment(Qt.AlignVCenter)
@@ -92,8 +92,8 @@ class MainWindow(QMainWindow):
         )
         self.fragment.setMaximumSize(200 - fragment_width, 20)
 
-        self.crawl_label = QLabel("Crawl subdomains:")
-        self.crawl_sub = QCheckBox()
+        # self.crawl_label = QLabel("Crawl subdomains:")
+        # self.crawl_sub = QCheckBox()
 
 
         self.my_table = QTableWidget()
@@ -122,8 +122,8 @@ class MainWindow(QMainWindow):
         self.site_layout.addWidget(self.site_label)
         self.site_layout.addWidget(self.site)
 
-        self.crawl_layout.addWidget(self.crawl_label)
-        self.crawl_layout.addWidget(self.crawl_sub)
+        # self.crawl_layout.addWidget(self.crawl_label)
+        # self.crawl_layout.addWidget(self.crawl_sub)
 
         self.hent = QPushButton("Hent urler")
         self.hent.setMaximumSize(200, 30)
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
 
         self.left_sidebar.addLayout(self.site_layout)
         self.left_sidebar.addLayout(self.fragment_layout)
-        self.left_sidebar.addLayout(self.crawl_layout)
+        # self.left_sidebar.addLayout(self.crawl_layout)
         self.left_sidebar.addLayout(self.button_layout)
         self.layout1.addLayout(self.left_sidebar)
 
@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
         with Bot() as bot:
             html = bot.get_html(url)
             page = Page(html)
-            self.currentRowCount = table.rowCount()
+            currentRowCount = table.rowCount()
             table.setRowCount(currentRowCount + 1)
             table.setItem(currentRowCount, 0, QTableWidgetItem(f"{page.title}"))
             table.setItem(currentRowCount, 1, QTableWidgetItem(f"{page.url}"))
@@ -196,12 +196,7 @@ class MainWindow(QMainWindow):
 
     def add_data(self, table , run):
         domain = tldextract.extract(self.fragment.text())
-
-        if self.crawl_sub.isChecked():
-            set_config("domain", ".".join(domain[1:]))
-        else:
-            set_config("domain", ".".join(domain))
-
+        set_config("domain", domain.registered_domain)
         if str(self.site.currentText()) == "alle":
             run_page_workers(self.fragment.text(), 5, table, self.antall, run)
 
