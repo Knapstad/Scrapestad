@@ -130,12 +130,12 @@ class MainWindow(QMainWindow):
         self.lagre = QPushButton("Save urls")
         self.lagre.setMaximumSize(200, 30)
         self.hent.clicked.connect(self.execute_add_data)
-        self.lagre.clicked.connect(lambda: save_data(self.my_table))
+        self.lagre.clicked.connect(lambda: self.save_data(self.my_table))
         self.antall = QLabel("")
 
 
         shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
-        shortcut.activated.connect(lambda: save_data(self.my_table))
+        shortcut.activated.connect(lambda: self.save_data(self.my_table))
 
         self.button_layout.addWidget(self.hent)
         self.button_layout.addWidget(self.lagre)
@@ -191,7 +191,7 @@ class MainWindow(QMainWindow):
             table.setItem(currentRowCount, 7, QTableWidgetItem(f"{len(page.images_blank_alt)}"))
             table.setItem(currentRowCount, 8, QTableWidgetItem(f"{len(page.images_missing_alt)}"))
             table.setItem(currentRowCount, 9, QTableWidgetItem(f"{page.links}"))
-            self.antall.setText(f"Antall urler: 1")
+            self.antall.setText(f"Number of urls: 1")
 
 
     def add_data(self, table , run):
