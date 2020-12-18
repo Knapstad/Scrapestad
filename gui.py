@@ -210,9 +210,9 @@ class MainWindow(QMainWindow):
 
     def save_data(self, table):
         try:
-            header = ["Tittel", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"]
+            header = ["Title", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"]
             filename = QFileDialog.getSaveFileName(
-                caption="Lagre fil",
+                caption="Save fil",
                 directory=f"{self.fragment.text()}".replace(".","-").lower(),
                 filter="Csv (*.csv)",
             )
@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
                         try:
                             writer.writerow(data)
                         except Exception as e:
-                            print(f"could not write {data} -- {e}")
+                            print(f"Could not write {data} -- {e}")
         except Exception as e:
             print(e)
 
