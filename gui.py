@@ -202,7 +202,7 @@ class MainWindow(QMainWindow):
 
         if str(self.site.currentText()) == "en":
             get_one(table, self.fragment.text())
-        self.hent.setText("Fetch Urls")
+        self.hent.setText("Fetch urls")
 
         
 
