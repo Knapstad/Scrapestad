@@ -125,9 +125,9 @@ class MainWindow(QMainWindow):
         # self.crawl_layout.addWidget(self.crawl_label)
         # self.crawl_layout.addWidget(self.crawl_sub)
 
-        self.hent = QPushButton("Hent urler")
+        self.hent = QPushButton("Fetch urls")
         self.hent.setMaximumSize(200, 30)
-        self.lagre = QPushButton("Lagre urler")
+        self.lagre = QPushButton("Save urls")
         self.lagre.setMaximumSize(200, 30)
         self.hent.clicked.connect(self.execute_add_data)
         self.lagre.clicked.connect(lambda: save_data(self.my_table))
@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
     def execute_add_data(self):
         if not RUNNING.value :
             # print(f"Active: {bool(ACTIVE)} and running: {bool(RUNNING)} ")
-            self.antall.setText("Henter data...")
+            self.antall.setText("Fetching data...")
             worker = Worker(self.add_data, self.my_table, ACTIVE)
             RUNNING.value = 1
             self.hent.setText("Pause")
@@ -203,6 +203,7 @@ class MainWindow(QMainWindow):
         if str(self.site.currentText()) == "en":
             get_one(table, self.fragment.text())
         self.hent.setText("Fetch Urls")
+
         
 
     def save_data(self, table):
