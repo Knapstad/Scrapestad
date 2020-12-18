@@ -95,10 +95,10 @@ class MainWindow(QMainWindow):
         # self.crawl_label = QLabel("Crawl subdomains:")
         # self.crawl_sub = QCheckBox()
 
-
+        self.table_header = ["Title", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"]
         self.my_table = QTableWidget()
         self.my_table.setColumnCount(10)
-        self.my_table.setHorizontalHeaderLabels(["Title", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"])
+        self.my_table.setHorizontalHeaderLabels(self.table_header)
         self.my_table.resizeColumnsToContents()
         self.my_table.setRowCount(0)
         self.my_table.setColumnWidth(0,200)
@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
 
     def save_data(self, table):
         try:
-            header = ["Title", "Url","Actual url", "Redirected", "Description", "Images","Images with alt", "Images with blank alt", "Images with no alt", "Links"]
+            header = self.table_header
             filename = QFileDialog.getSaveFileName(
                 caption="Save fil",
                 directory=f"{self.fragment.text()}".replace(".","-").lower(),
