@@ -13,4 +13,4 @@ selenium==3.141.0
 six==1.15.0
 soupsieve==1.9.5
 tldextract==3.0.2
-urllib3==1.25.8
+urllib3==1.26.2
