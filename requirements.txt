@@ -2,7 +2,7 @@ beautifulsoup4==4.10.0
 bs4==0.0.1
 certifi==2021.5.30
 chardet==4.0.0
-filelock==3.0.12
+filelock==3.1.0
 idna==3.2
 lxml==4.6.3
 PyQt5==5.15.4
