@@ -7,7 +7,7 @@ idna==3.3
 lxml==4.6.3
 PyQt5==5.15.5
 PyQt5-sip==12.9.0
-requests==2.26.0
+requests==2.27.0
 requests-file==1.5.1
 selenium==4.0.0
 six==1.16.0
