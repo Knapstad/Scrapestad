@@ -1,7 +1,7 @@
 beautifulsoup4==4.11.1
 bs4==0.0.1
 certifi==2022.9.24
-chardet==5.0.0
+chardet==5.1.0
 filelock==3.8.0
 idna==3.3
 lxml==4.9.1
